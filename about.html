@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Music Popularity Prediction</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-image: url('https://img.freepik.com/free-photo/flat-lay-music-concept-white-background_23-2148282030.jpg?t=st=1743920086~exp=1743923686~hmac=9cbfa730ec9930253671db4b8596369caeae1b7c38d9b44b0065de92c92c6914&w=1380');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .container {
+            padding: 50px;
+            background-color: rgba(255, 255, 255, 0.9); /* Slight transparency for the container */
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            max-width: 700px; 
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #e74c3c; 
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: #555;
+            text-align: justify; 
+        }
+
+        .goals {
+            margin-top: 20px;
+            background-color: #d35400; 
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .goals h2 {
+            font-size: 28px; 
+            color: white; 
+            margin-bottom: 15px;
+            font-weight: bold; 
+        }
+
+        .goals ul {
+            list-style-type: square;
+            padding-left: 20px;
+            color: #fff; 
+            text-align: justify; 
+        }
+
+        .goals ul li {
+            font-size: 20px; 
+            margin-bottom: 15px;
+            color: white; 
+            font-weight: normal; 
+        }
+
+        .team {
+            margin-top: 20px;
+            background-color: #3498db;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .team h3 {
+            font-size: 28px; 
+            color: #fff; 
+            margin-bottom: 20px;
+        }
+
+        .team ul {
+            list-style-type: square;
+            padding-left: 20px;
+            text-align: left;
+            font-size: 20px;
+            color: #fff;
+        }
+
+        .team ul li {
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #fff; 
+        }
+
+        .team ul li::before {        
+            color: #fff; 
+        }
+
+        .instructor {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center; 
+            background-color: #2ecc71; 
+        }
+
+        .instructor h4 {
+            font-size: 28px; 
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .instructor p {
+            font-size: 22px; 
+            color: #fff;
+            margin: 0;
+            text-align: center; 
+        }
+
+        .variables-description {
+            margin-top: 30px;
+            background-color: #f39c12; 
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;  
+        }
+
+        .variables-description h2 {
+            font-size: 28px;
+            color: white;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .variables-description h3 {
+            font-size: 24px;
+            color: white;
+            margin-bottom: 10px;
+            font-weight: bold;
+            text-align: left; 
+        }
+
+        .variables-description ul {
+            list-style-type: square;
+            padding-left: 20px;
+            font-size: 15px;
+            color: #fff;
+            text-align: left; 
+        }
+
+        .variables-description ul li {
+            margin-bottom: 10px;
+            font-weight: normal;
+            color: white;
+        }
+
+        .highlight {
+            background-color: #f1c40f;
+            padding: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>About the Project</h1>
+
+        <p>
+            Music streaming platforms like Spotify have reshaped how people discover and engage with music. In this digital age, predicting a song's popularity is essential for artists, producers, and advertisers to stay competitive. Understanding the key drivers of a song's success enables better marketing campaigns, playlist management, and personalized recommendations.
+        </p>
+
+        <p>
+            This project explores the connection between audio features (e.g., tempo, energy, valence, and danceability) and song popularity. By analyzing a dataset of 2,409 songs with 20 audio-related features (15 numerical, 5 categorical) from the Spotify API, we aim to predict the likelihood of a song's popularity using machine learning techniques.
+        </p>
+
+        <p>
+            Through this project, we aim to provide valuable insights for artists, producers, marketers, and streaming services to enhance user experience and engagement.
+        </p>
+
+        <div class="goals">
+            <h2>Goals</h2>
+            <ul>
+                <li>Examine the relationship between audio features and song popularity.</li>
+                <li>Develop a model to predict a song's success based on these features.</li>
+            </ul>
+        </div>
+
+        <div class="variables-description">
+            <h2>Feature Descriptions</h2>
+
+            <!-- Dependent Variable Section -->
+            <h3>Dependent Variable</h3>
+            <ul>
+                <li><span class="highlight">Track Popularity</span>  - Numerical: A score (0-100) indicating how popular the track is on Spotify.</li>
+            </ul>
+
+            <!-- Independent Variables Section -->
+            <h3>Independent Variables</h3>
+            <ul>
+                <li><strong>Artist Name</strong> – Categorical: Name of the artist.</li>
+                <li><strong>Country Name</strong> – Categorical: The country where the song was produced.</li>
+                <li><strong>Artist Genre</strong> – Categorical: A list of genres associated with the artist.</li>
+                <li><strong>Duration</strong> – Numerical: The length of the track in minutes.</li>
+                <li><strong>Speechiness</strong> – Numerical: The presence of spoken words in the track.</li>
+                <li><strong>Energy</strong> – Numerical: Measure of intensity and activity in the track.</li>
+                <li><strong>Valence</strong> – Numerical: Measure of the musical positivity.</li>
+                <li><strong>Danceability</strong> – Numerical: Measure of how suitable the track is for dancing.</li>
+                <li><strong>Acousticness</strong> – Numerical: Confidence that the track is acoustic.</li>
+                <li><strong>Tempo</strong> – Numerical: The tempo (speed) of the track in beats per minute.</li>
+                <li><strong>Liveness</strong> – Numerical: Measure of the presence of a live audience.</li>
+            </ul>
+        </div>
+
+        <div class="instructor">
+            <h4>Instructor</h4>
+            <p>Professor A. Sodiq Shofoluwe</p>
+        </div>
+
+        <div class="team">
+            <h3>Group Members</h3>
+            <ul>
+                <li>Prabhleen Kaur (0857194)</li>
+                <li>Rajwinder Kaur (0831280)</li>
+                <li>Vindya Senadheera (0857437)</li>
+                <li>STM Chathurangi (0850982)</li>
+                <li>Ajay Haji Korbe (0852660)</li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>

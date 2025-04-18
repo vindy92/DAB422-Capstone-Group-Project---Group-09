@@ -1,0 +1,1253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Melody Metrics -  Predicting popular songs based on audio features</title>
+    <!-- Bootstrap 5 CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            max-width: 900px;
+            margin-top: 60px;
+        }
+
+        .form-section {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-control,
+        .btn {
+            border-radius: 0.375rem;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .icon-input {
+            position: relative;
+        }
+
+        .icon-input i {
+            position: absolute;
+            left: 12px;
+            top: 12px;
+            color: #007bff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .spinner {
+            display: none;
+        }
+
+        .spinner.show {
+            display: inline-block;
+        }
+
+        .prediction {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4" style="background-color: rgba(255, 255, 255, 0.9); padding: 30px; border-radius: 8px; max-width: 900px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);">
+        <h2 class="text-center mb-4" style="font-size: 36px; color: #e74c3c;">Song Popularity Prediction</h2>
+    
+        <form action="/home" method="POST" id="prediction-form">
+            <div class="row g-3">
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="form-group">
+                        <!-- Dropdown for Artist Name Selection -->
+                        <label for="artist_name"  class="form-label">Artist Name:</label>
+                        <select class="form-select" id="artist_name" name="artist_name" required
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Select artist name">
+                            <option value="" disabled selected>Select an Artist</option>
+                            <option value="A Fine Frenzy">A Fine Frenzy</option>
+                            <option value="A Great Big World">A Great Big World</option>
+                            <option value="A Great Big World;Christina Aguilera">A Great Big World;Christina Aguilera</option>
+                            <option value="A Great Big World;Futuristic">A Great Big World;Futuristic</option>
+                            <option value="A Mose;TBabz">A Mose;TBabz</option>
+                            <option value="A.R. Rahman">A.R. Rahman</option>
+                            <option value="Aaron Espe">Aaron Espe</option>
+                            <option value="Abayomy Afrobeat Orquestra">Abayomy Afrobeat Orquestra</option>
+                            <option value="Abayomy Afrobeat Orquestra;Orlando Julius">Abayomy Afrobeat Orquestra;Orlando Julius</option>
+                            <option value="Abayomy Afrobeat Orquestra;Otto">Abayomy Afrobeat Orquestra;Otto</option>
+                            <option value="Abdou Gambetta">Abdou Gambetta</option>
+                            <option value="Abdul Majeed Abdullah">Abdul Majeed Abdullah</option>
+                            <option value="Aberola">Aberola</option>
+                            <option value="Abu">Abu</option>
+                            <option value="Achint">Achint</option>
+                            <option value="Acoustic Guitar Collective">Acoustic Guitar Collective</option>
+                            <option value="AcousticTrench">AcousticTrench</option>
+                            <option value="Adam Christopher">Adam Christopher</option>
+                            <option value="Adam Christopher;Dan Berk">Adam Christopher;Dan Berk</option>
+                            <option value="Addison Rae">Addison Rae</option>
+                            <option value="Adel Ebrahim">Adel Ebrahim</option>
+                            <option value="Africania">Africania</option>
+                            <option value="Afrocidade">Afrocidade</option>
+                            <option value="Afrocidade;Luedji Luna">Afrocidade;Luedji Luna</option>
+                            <option value="Agustín Amigó;Nylonwings">Agustín Amigó;Nylonwings</option>
+                            <option value="Ahmed Saad">Ahmed Saad</option>
+                            <option value="Aidan Hawken">Aidan Hawken</option>
+                            <option value="Aimyon">Aimyon</option>
+                            <option value="AJJ">AJJ</option>
+                            <option value="Akalé Wubé;Manu Dibango">Akalé Wubé;Manu Dibango</option>
+                            <option value="Akhil">Akhil</option>
+                            <option value="Akhil Sachdeva">Akhil Sachdeva</option>
+                            <option value="Akon">Akon</option>
+                            <option value="Akriti Kakar">Akriti Kakar</option>
+                            <option value="AL SHAMI">AL SHAMI</option>
+                            <option value="Alan Walker">Alan Walker</option>
+                            <option value="Alande">Alande</option>
+                            <option value="Albert Collins">Albert Collins</option>
+                            <option value="Albert King">Albert King</option>
+                            <option value="Alex Warren">Alex Warren</option>
+                            <option value="Ali Farka Touré">Ali Farka Touré</option>
+                            <option value="Ali Farka Touré;Toumani Diabaté">Ali Farka Touré;Toumani Diabaté</option>
+                            <option value="Alka Yagnik">Alka Yagnik</option>
+                            <option value="Allman Brown">Allman Brown</option>
+                            <option value="Allman Brown;Liz Lawrence">Allman Brown;Liz Lawrence</option>
+                            <option value="Alok">Alok</option>
+                            <option value="Amaal Mallik">Amaal Mallik</option>
+                            <option value="Amber Leigh Irish">Amber Leigh Irish</option>
+                            <option value="Amentia">Amentia</option>
+                            <option value="Ami Mishra">Ami Mishra</option>
+                            <option value="Amir Jamal">Amir Jamal</option>
+                            <option value="Amos Lee">Amos Lee</option>
+                            <option value="Amplexos;Digitaldubs;Le??o Et??ope do M??ier;Lenine">Amplexos;Digitaldubs;Le??o Et??ope do M??ier;Lenine</option>
+                            <option value="Amr Diab">Amr Diab</option>
+                            <option value="Amrit Maan">Amrit Maan</option>
+                            <option value="Amy Stroup">Amy Stroup</option>
+                            <option value="Anatolian Sessions">Anatolian Sessions</option>
+                            <option value="Andrew Belle">Andrew Belle</option>
+                            <option value="Andrew Foy">Andrew Foy</option>
+                            <option value="Andrew Foy;Renee Foy">Andrew Foy;Renee Foy</option>
+                            <option value="Andrew Foy;Renee Foy;Stephan Baulig">Andrew Foy;Renee Foy;Stephan Baulig</option>
+                            <option value="Andrew Ripp">Andrew Ripp</option>
+                            <option value="Angelina Cruz">Angelina Cruz</option>
+                            <option value="Angeloh">Angeloh</option>
+                            <option value="Angeloh;S.O">Angeloh;S.O</option>
+                            <option value="Angham">Angham</option>
+                            <option value="Anirudh Ravichander">Anirudh Ravichander</option>
+                            <option value="Ankit Tiwari">Ankit Tiwari</option>
+                            <option value="Ankle Grease">Ankle Grease</option>
+                            <option value="Anna Hamilton">Anna Hamilton</option>
+                            <option value="Anna Nalick">Anna Nalick</option>
+                            <option value="Anuel AA">Anuel AA</option>
+                            <option value="Anuv Jain">Anuv Jain</option>
+                            <option value="Anya Marina">Anya Marina</option>
+                            <option value="Aoi Teshima">Aoi Teshima</option>
+                            <option value="AP Dhillon">AP Dhillon</option>
+                            <option value="Aparshakti Khurana">Aparshakti Khurana</option>
+                            <option value="Apes of the State">Apes of the State</option>
+                            <option value="Aqualung">Aqualung</option>
+                            <option value="Aqualung;Kina Grannis">Aqualung;Kina Grannis</option>
+                            <option value="Arctic Monkeys">Arctic Monkeys</option>
+                            <option value="Ariana Grande">Ariana Grande</option>
+                            <option value="Arijit Singh">Arijit Singh</option>
+                            <option value="Aron Wright">Aron Wright</option>
+                            <option value="Artemas">Artemas</option>
+                            <option value="Aseel Hameem">Aseel Hameem</option>
+                            <option value="Asees Kaur">Asees Kaur</option>
+                            <option value="Asrar">Asrar</option>
+                            <option value="Atif Aslam">Atif Aslam</option>
+                            <option value="ATR;Luedji Luna">ATR;Luedji Luna</option>
+                            <option value="Augustana">Augustana</option>
+                            <option value="AUR">AUR</option>
+                            <option value="Austin Basham">Austin Basham</option>
+                            <option value="Austin Plaine">Austin Plaine</option>
+                            <option value="Aventura">Aventura</option>
+                            <option value="Avicii">Avicii</option>
+                            <option value="Ayed">Ayed</option>
+                            <option value="Ayushmann Khurrana">Ayushmann Khurrana</option>
+                            <option value="B Praak">B Praak</option>
+                            <option value="Baani Sandhu">Baani Sandhu</option>
+                            <option value="Bad Bunny">Bad Bunny</option>
+                            <option value="Badshah">Badshah</option>
+                            <option value="Bahaa Sultan">Bahaa Sultan</option>
+                            <option value="BaianaSystem">BaianaSystem</option>
+                            <option value="BaianaSystem;As Ganhadeiras de Itapu??">BaianaSystem;As Ganhadeiras de Itapu??</option>
+                            <option value="BaianaSystem;BNeg??o">BaianaSystem;BNeg??o</option>
+                            <option value="BaianaSystem;Buguinha Dub;Curumin;Edgar">BaianaSystem;Buguinha Dub;Curumin;Edgar</option>
+                            <option value="BaianaSystem;Bule Bule">BaianaSystem;Bule Bule</option>
+                            <option value="BaianaSystem;Bule Bule;Rapadura">BaianaSystem;Bule Bule;Rapadura</option>
+                            <option value="BaianaSystem;C??ssia Eller">BaianaSystem;C??ssia Eller</option>
+                            <option value="BaianaSystem;C??u">BaianaSystem;C??u</option>
+                            <option value="BaianaSystem;Carolaine">BaianaSystem;Carolaine</option>
+                            <option value="BaianaSystem;Claudia Manzo">BaianaSystem;Claudia Manzo</option>
+                            <option value="BaianaSystem;Liz Reis">BaianaSystem;Liz Reis</option>
+                            <option value="BaianaSystem;Makavelli;Jay Mitta">BaianaSystem;Makavelli;Jay Mitta</option>
+                            <option value="BaianaSystem;Makavelli;Jaymitta">BaianaSystem;Makavelli;Jaymitta</option>
+                            <option value="BaianaSystem;Na????o Zumbi">BaianaSystem;Na????o Zumbi</option>
+                            <option value="BaianaSystem;Orquestra Afrosinf??nica">BaianaSystem;Orquestra Afrosinf??nica</option>
+                            <option value="BaianaSystem;Orquestra Afrosinf??nica;Antonio Carlos & Jocafi">BaianaSystem;Orquestra Afrosinf??nica;Antonio Carlos & Jocafi</option>
+                            <option value="BaianaSystem;Roberto Mendes">BaianaSystem;Roberto Mendes</option>
+                            <option value="BaianaSystem;Samba de Lata de Tijua????">BaianaSystem;Samba de Lata de Tijua????</option>
+                            <option value="BaianaSystem;Thiago Fran??a">BaianaSystem;Thiago Fran??a</option>
+                            <option value="BaianaSystem;Tonho Mat??ria">BaianaSystem;Tonho Mat??ria</option>
+                            <option value="BaianaSystem;Tropkillaz">BaianaSystem;Tropkillaz</option>
+                            <option value="BaianaSystem;VANDAL">BaianaSystem;VANDAL</option>
+                            <option value="Bailey Jehl">Bailey Jehl</option>
+                            <option value="Bailey Pelkman;Randy Rektor">Bailey Pelkman;Randy Rektor</option>
+                            <option value="Bailey Rushlow">Bailey Rushlow</option>
+                            <option value="Balti">Balti</option>
+                            <option value="Bang Data">Bang Data</option>
+                            <option value="Bappi Lahiri">Bappi Lahiri</option>
+                            <option value="BAYKER">BAYKER</option>
+                            <option value="Beans on Toast">Beans on Toast</option>
+                            <option value="Bebe Rexha">Bebe Rexha</option>
+                            <option value="Becca Folkes;Happi">Becca Folkes;Happi</option>
+                            <option value="Becky G">Becky G</option>
+                            <option value="Ben Rector">Ben Rector</option>
+                            <option value="Ben Woodward">Ben Woodward</option>
+                            <option value="Benny Dayal">Benny Dayal</option>
+                            <option value="Benson Boone">Benson Boone</option>
+                            <option value="Beyonc?">Beyonc?</option>
+                            <option value="Beyond The Guitar">Beyond The Guitar</option>
+                            <option value="Big Mama Thornton">Big Mama Thornton</option>
+                            <option value="Big Ty;Markis">Big Ty;Markis</option>
+                            <option value="Billie Eilish">Billie Eilish</option>
+                            <option value="Bixiga 70">Bixiga 70</option>
+                            <option value="Blame Jones">Blame Jones</option>
+                            <option value="Blessd">Blessd</option>
+                            <option value="Blugazer">Blugazer</option>
+                            <option value="Bobbylene">Bobbylene</option>
+                            <option value="Bohm">Bohm</option>
+                            <option value="Bombay the Artist">Bombay the Artist</option>
+                            <option value="Bootstraps">Bootstraps</option>
+                            <option value="Bora Uzer">Bora Uzer</option>
+                            <option value="BossMan Dlow">BossMan Dlow</option>
+                            <option value="Boyce Avenue">Boyce Avenue</option>
+                            <option value="Boyce Avenue;Alex Goot">Boyce Avenue;Alex Goot</option>
+                            <option value="Boyce Avenue;Bea Miller">Boyce Avenue;Bea Miller</option>
+                            <option value="Boyce Avenue;Connie Talbot">Boyce Avenue;Connie Talbot</option>
+                            <option value="Boyce Avenue;Emma Heesters">Boyce Avenue;Emma Heesters</option>
+                            <option value="Boyce Avenue;Fifth Harmony">Boyce Avenue;Fifth Harmony</option>
+                            <option value="Boyce Avenue;Hannah Trigwell">Boyce Avenue;Hannah Trigwell</option>
+                            <option value="Boyce Avenue;Jennel Garcia">Boyce Avenue;Jennel Garcia</option>
+                            <option value="Boyce Avenue;Kina Grannis">Boyce Avenue;Kina Grannis</option>
+                            <option value="Boyce Avenue;Megan Davies;Jaclyn Davies">Boyce Avenue;Megan Davies;Jaclyn Davies</option>
+                            <option value="Boyce Avenue;Megan Nicole">Boyce Avenue;Megan Nicole</option>
+                            <option value="Boyce Avenue;Rachel Grae">Boyce Avenue;Rachel Grae</option>
+                            <option value="Boyce Avenue;Sarah Hyland">Boyce Avenue;Sarah Hyland</option>
+                            <option value="Boyce Avenue;Tyler Ward">Boyce Avenue;Tyler Ward</option>
+                            <option value="Brandi Carlile">Brandi Carlile</option>
+                            <option value="Brandi Carlile;Lucius">Brandi Carlile;Lucius</option>
+                            <option value="Brandi Carlile;Sam Smith">Brandi Carlile;Sam Smith</option>
+                            <option value="Brandon Chase">Brandon Chase</option>
+                            <option value="Brandon Chase;Taylor Manns">Brandon Chase;Taylor Manns</option>
+                            <option value="Breakestra">Breakestra</option>
+                            <option value="Breakestra;Choklate">Breakestra;Choklate</option>
+                            <option value="Brendan James">Brendan James</option>
+                            <option value="Brett Dennen">Brett Dennen</option>
+                            <option value="Brett Dennen;Benedict Cumberbatch">Brett Dennen;Benedict Cumberbatch</option>
+                            <option value="Brownout">Brownout</option>
+                            <option value="Bruno Mars">Bruno Mars</option>
+                            <option value="Buddy Guy;Bonnie Raitt">Buddy Guy;Bonnie Raitt</option>
+                            <option value="Buddy Guy;Derek Trucks">Buddy Guy;Derek Trucks</option>
+                            <option value="C.W. Stoneking">C.W. Stoneking</option>
+                            <option value="Ca??">Ca??</option>
+                            <option value="Cabela and Schmitt">Cabela and Schmitt</option>
+                            <option value="Cahelo">Cahelo</option>
+                            <option value="Caj Morgan">Caj Morgan</option>
+                            <option value="Caleb Santos;Viva Music Publishing Inc.">Caleb Santos;Viva Music Publishing Inc.</option>
+                            <option value="Calibretto 13">Calibretto 13</option>
+                            <option value="Calle 13">Calle 13</option>
+                            <option value="CalledOut Music">CalledOut Music</option>
+                            <option value="Callum J Wright">Callum J Wright</option>
+                            <option value="Calvin Harris">Calvin Harris</option>
+                            <option value="Camila Cabello">Camila Cabello</option>
+                            <option value="Can Aydin">Can Aydin</option>
+                            <option value="Cannon's Jug Stompers">Cannon's Jug Stompers</option>
+                            <option value="Canyon City">Canyon City</option>
+                            <option value="Carly Lyman;Jason Lux">Carly Lyman;Jason Lux</option>
+                            <option value="Cary Brothers">Cary Brothers</option>
+                            <option value="Catherine Feeny">Catherine Feeny</option>
+                            <option value="Celestial Conscience">Celestial Conscience</option>
+                            <option value="Cereus">Cereus</option>
+                            <option value="Chad Hates George">Chad Hates George</option>
+                            <option value="Chappell Roan">Chappell Roan</option>
+                            <option value="Charli xcx">Charli xcx</option>
+                            <option value="Cheb Hichem TGV">Cheb Hichem TGV</option>
+                            <option value="Chord Overstreet">Chord Overstreet</option>
+                            <option value="Chord Overstreet;Deepend">Chord Overstreet;Deepend</option>
+                            <option value="Chris Brown">Chris Brown</option>
+                            <option value="Chris Cresswell">Chris Cresswell</option>
+                            <option value="Chris IDH">Chris IDH</option>
+                            <option value="Chris Stapleton">Chris Stapleton</option>
+                            <option value="Chuck Ragan">Chuck Ragan</option>
+                            <option value="Ciaran Lavery">Ciaran Lavery</option>
+                            <option value="Clementine Duo">Clementine Duo</option>
+                            <option value="Cody Johnson">Cody Johnson</option>
+                            <option value="Coldplay">Coldplay</option>
+                            <option value="Colin & Caroline">Colin & Caroline</option>
+                            <option value="Corporate Hearts">Corporate Hearts</option>
+                            <option value="Correatown">Correatown</option>
+                            <option value="Covers Culture">Covers Culture</option>
+                            <option value="Covers Culture;Acoustic Covers Culture;Lounge Covers Culture Of Popular Songs">Covers Culture;Acoustic Covers Culture;Lounge Covers Culture Of Popular Songs</option>
+                            <option value="Criolo">Criolo</option>
+                            <option value="Criolo;Emicida">Criolo;Emicida</option>
+                            <option value="Criolo;Emicida;Evandro Fi??ti">Criolo;Emicida;Evandro Fi??ti</option>
+                            <option value="Criolo;Emicida;Mano Brown">Criolo;Emicida;Mano Brown</option>
+                            <option value="Criolo;MC Hariel;Liniker;Maria Vilani;Jaques Morelenbaum">Criolo;MC Hariel;Liniker;Maria Vilani;Jaques Morelenbaum</option>
+                            <option value="Criolo;Milton Nascimento">Criolo;Milton Nascimento</option>
+                            <option value="Criolo;Rael">Criolo;Rael</option>
+                            <option value="Cris Mj">Cris Mj</option>
+                            <option value="Crossabroad">Crossabroad</option>
+                            <option value="Cwby">Cwby</option>
+                            <option value="Cymande">Cymande</option>
+                            <option value="D. Cali">D. Cali</option>
+                            <option value="Daddy Yankee">Daddy Yankee</option>
+                            <option value="Dafina Zeqiri">Dafina Zeqiri</option>
+                            <option value="DAKU">DAKU</option>
+                            <option value="Dan Andriano in the Emergency Room">Dan Andriano in the Emergency Room</option>
+                            <option value="Dan Berk">Dan Berk</option>
+                            <option value="Daniel Robinson">Daniel Robinson</option>
+                            <option value="Danny Ocean">Danny Ocean</option>
+                            <option value="Dark but Gray">Dark but Gray</option>
+                            <option value="Darshan Raval">Darshan Raval</option>
+                            <option value="Dasha">Dasha</option>
+                            <option value="Dave Barnes">Dave Barnes</option>
+                            <option value="Dave Van Ronk">Dave Van Ronk</option>
+                            <option value="David Guetta">David Guetta</option>
+                            <option value="DAWN">DAWN</option>
+                            <option value="Days N Daze">Days N Daze</option>
+                            <option value="Days N Daze;Freddie Boatright">Days N Daze;Freddie Boatright</option>
+                            <option value="Days N Daze;Juicy Karkass">Days N Daze;Juicy Karkass</option>
+                            <option value="Defiance, Ohio">Defiance, Ohio</option>
+                            <option value="Demetra">Demetra</option>
+                            <option value="dePaul music">dePaul music</option>
+                            <option value="Dev Negi">Dev Negi</option>
+                            <option value="Dhanda Nyoliwala">Dhanda Nyoliwala</option>
+                            <option value="Different Ray">Different Ray</option>
+                            <option value="Diljit Dosanjh">Diljit Dosanjh</option>
+                            <option value="DJ Snake">DJ Snake</option>
+                            <option value="Doja Cat">Doja Cat</option>
+                            <option value="Don Omar">Don Omar</option>
+                            <option value="Donovan Woods">Donovan Woods</option>
+                            <option value="Donovan Woods;Tenille Townes">Donovan Woods;Tenille Townes</option>
+                            <option value="DPR IAN">DPR IAN</option>
+                            <option value="Drake">Drake</option>
+                            <option value="Dream Note">Dream Note</option>
+                            <option value="Drei Rana">Drei Rana</option>
+                            <option value="Drei Rana;Selena Marie">Drei Rana;Selena Marie</option>
+                            <option value="Drew Holcomb & The Neighbors">Drew Holcomb & The Neighbors</option>
+                            <option value="Drew Holcomb;Ellie Holcomb;Drew Holcomb & The Neighbors">Drew Holcomb;Ellie Holcomb;Drew Holcomb & The Neighbors</option>
+                            <option value="Dua Lipa">Dua Lipa</option>
+                            <option value="DYSTINCT">DYSTINCT</option>
+                            <option value="Eastmountainsouth">Eastmountainsouth</option>
+                            <option value="Ebo Taylor">Ebo Taylor</option>
+                            <option value="Ed Sheeran">Ed Sheeran</option>
+                            <option value="Eddie Neblett">Eddie Neblett</option>
+                            <option value="Eddie van der Meer">Eddie van der Meer</option>
+                            <option value="Eddie Vedder">Eddie Vedder</option>
+                            <option value="Eddie Vedder;Cat Power">Eddie Vedder;Cat Power</option>
+                            <option value="Eddie Vedder;Nusrat Fateh Ali Khan">Eddie Vedder;Nusrat Fateh Ali Khan</option>
+                            <option value="Eddy Tyler">Eddy Tyler</option>
+                            <option value="Eden Elf;Ren Avel">Eden Elf;Ren Avel</option>
+                            <option value="Edy Hafler">Edy Hafler</option>
+                            <option value="EJ De Perio">EJ De Perio</option>
+                            <option value="El Hijo De La Cumbia">El Hijo De La Cumbia</option>
+                            <option value="El Michels Affair">El Michels Affair</option>
+                            <option value="El Mundo">El Mundo</option>
+                            <option value="El Naddaha">El Naddaha</option>
+                            <option value="Elias Dor?">Elias Dor?</option>
+                            <option value="elijah woods">elijah woods</option>
+                            <option value="Elissa">Elissa</option>
+                            <option value="Ella Langley">Ella Langley</option>
+                            <option value="Elton John">Elton John</option>
+                            <option value="Elyanna">Elyanna</option>
+                            <option value="Emilie Mover">Emilie Mover</option>
+                            <option value="Eminem">Eminem</option>
+                            <option value="Eminence">Eminence</option>
+                            <option value="Erato;Charlotte Almgren">Erato;Charlotte Almgren</option>
+                            <option value="Eric Hutchinson">Eric Hutchinson</option>
+                            <option value="Eric Lumiere">Eric Lumiere</option>
+                            <option value="Eric Sharp">Eric Sharp</option>
+                            <option value="Erin McCarley">Erin McCarley</option>
+                            <option value="Ernest Ranglin">Ernest Ranglin</option>
+                            <option value="Essam Sasa">Essam Sasa</option>
+                            <option value="Ethan Loukas">Ethan Loukas</option>
+                            <option value="Ethan Loukas;Janine Te?¤oso">Ethan Loukas;Janine Te?¤oso</option>
+                            <option value="F?a">F?a</option>
+                            <option value="Fadel Chaker">Fadel Chaker</option>
+                            <option value="Faheem Abdullah">Faheem Abdullah</option>
+                            <option value="Fahlberg">Fahlberg</option>
+                            <option value="Fantomel">Fantomel</option>
+                            <option value="Feid">Feid</option>
+                            <option value="Fela Kuti">Fela Kuti</option>
+                            <option value="Femi Kuti">Femi Kuti</option>
+                            <option value="Figoshin">Figoshin</option>
+                            <option value="Filip Nordin">Filip Nordin</option>
+                            <option value="Five For Fighting">Five For Fighting</option>
+                            <option value="FloyyMenor">FloyyMenor</option>
+                            <option value="Frank Turner">Frank Turner</option>
+                            <option value="Freddie King">Freddie King</option>
+                            <option value="French Montana">French Montana</option>
+                            <option value="Front Porch Step">Front Porch Step</option>
+                            <option value="Fuerza Regida">Fuerza Regida</option>
+                            <option value="Future">Future</option>
+                            <option value="Gabrielle Aplin">Gabrielle Aplin</option>
+                            <option value="Gabrielle Aplin;JP Cooper">Gabrielle Aplin;JP Cooper</option>
+                            <option value="Gail Blanco">Gail Blanco</option>
+                            <option value="Gaitha">Gaitha</option>
+                            <option value="Gen Hoshino">Gen Hoshino</option>
+                            <option value="Gentle Glow">Gentle Glow</option>
+                            <option value="Get Dead">Get Dead</option>
+                            <option value="Gigi Perez">Gigi Perez</option>
+                            <option value="GIMS">GIMS</option>
+                            <option value="Glass Animals">Glass Animals</option>
+                            <option value="Glitter Dream">Glitter Dream</option>
+                            <option value="GloRilla">GloRilla</option>
+                            <option value="Goldie Sohel">Goldie Sohel</option>
+                            <option value="Gorje Hewek">Gorje Hewek</option>
+                            <option value="Grace George">Grace George</option>
+                            <option value="Grace Petrie">Grace Petrie</option>
+                            <option value="Gracie Abrams">Gracie Abrams</option>
+                            <option value="Graham Colton">Graham Colton</option>
+                            <option value="Gravagerz">Gravagerz</option>
+                            <option value="Greg Laswell">Greg Laswell</option>
+                            <option value="Greyboy;Nino Moschella">Greyboy;Nino Moschella</option>
+                            <option value="GRIDD">GRIDD</option>
+                            <option value="Grupo Fantasma">Grupo Fantasma</option>
+                            <option value="Guru Randhawa">Guru Randhawa</option>
+                            <option value="Guus Dielissen">Guus Dielissen</option>
+                            <option value="Gyedu-Blay Ambolley">Gyedu-Blay Ambolley</option>
+                            <option value="Haifa Wehbe">Haifa Wehbe</option>
+                            <option value="Hanare Gumi">Hanare Gumi</option>
+                            <option value="Hanita Bhambri">Hanita Bhambri</option>
+                            <option value="Hannah's Yard">Hannah's Yard</option>
+                            <option value="Hanumankind">Hanumankind</option>
+                            <option value="Harley Poe">Harley Poe</option>
+                            <option value="Harrdy Sandhu">Harrdy Sandhu</option>
+                            <option value="Harry Styles">Harry Styles</option>
+                            <option value="Hassan Shakosh">Hassan Shakosh</option>
+                            <option value="HAUMS">HAUMS</option>
+                            <option value="Highland Peak">Highland Peak</option>
+                            <option value="Himesh Reshammiya">Himesh Reshammiya</option>
+                            <option value="Howie Day">Howie Day</option>
+                            <option value="Howlin' Wolf">Howlin' Wolf</option>
+                            <option value="Hozier">Hozier</option>
+                            <option value="Hugh Masekela">Hugh Masekela</option>
+                            <option value="Hugh Masekela;Gugu Shezi">Hugh Masekela;Gugu Shezi</option>
+                            <option value="Husa & Zeyada">Husa & Zeyada</option>
+                            <option value="Hussain Aljassmi">Hussain Aljassmi</option>
+                            <option value="Ice Seguerra">Ice Seguerra</option>
+                            <option value="Ichiko Aoba">Ichiko Aoba</option>
+                            <option value="Ikebe Shakedown">Ikebe Shakedown</option>
+                            <option value="Ilover">Ilover</option>
+                            <option value="Imagine Dragons">Imagine Dragons</option>
+                            <option value="In Another Galaxy">In Another Galaxy</option>
+                            <option value="Ingrid Michaelson">Ingrid Michaelson</option>
+                            <option value="Ingrid Michaelson;A Great Big World">Ingrid Michaelson;A Great Big World</option>
+                            <option value="Ingrid Michaelson;AJR">Ingrid Michaelson;AJR</option>
+                            <option value="Ingrid Michaelson;ZAYN">Ingrid Michaelson;ZAYN</option>
+                            <option value="Isabel LaRosa">Isabel LaRosa</option>
+                            <option value="Isabella Celander">Isabella Celander</option>
+                            <option value="Isteefa">Isteefa</option>
+                            <option value="Ivan & Alyosha">Ivan & Alyosha</option>
+                            <option value="J Balvin">J Balvin</option>
+                            <option value="J. Cole">J. Cole</option>
+                            <option value="Jack Harlow">Jack Harlow</option>
+                            <option value="Jack Savoretti">Jack Savoretti</option>
+                            <option value="Jackie Mittoo">Jackie Mittoo</option>
+                            <option value="Jae Hall">Jae Hall</option>
+                            <option value="Jagwar Twin">Jagwar Twin</option>
+                            <option value="James Arthur">James Arthur</option>
+                            <option value="Jasleen Royal">Jasleen Royal</option>
+                            <option value="Jasmine Sandlas">Jasmine Sandlas</option>
+                            <option value="Jason Mraz">Jason Mraz</option>
+                            <option value="Jason Mraz">Jason Mraz</option>
+                            <option value="Jason Mraz;Colbie Caillat">Jason Mraz;Colbie Caillat</option>
+                            <option value="Jason Mraz;Meghan Trainor">Jason Mraz;Meghan Trainor</option>
+                            <option value="Jassie Gill">Jassie Gill</option>
+                            <option value="Javed Ali">Javed Ali</option>
+                            <option value="Javed-Mohsin">Javed-Mohsin</option>
+                            <option value="Jay Filson">Jay Filson</option>
+                            <option value="Jay Wheeler">Jay Wheeler</option>
+                            <option value="Jean Vayat">Jean Vayat</option>
+                            <option value="Jeet Gannguli">Jeet Gannguli</option>
+                            <option value="Jelly Roll">Jelly Roll</option>
+                            <option value="JENNIE">JENNIE</option>
+                            <option value="Jess Penner">Jess Penner</option>
+                            <option value="JHAYCO">JHAYCO</option>
+                            <option value="Jimin">Jimin</option>
+                            <option value="Jimmy Rogers">Jimmy Rogers</option>
+                            <option value="JJ Heller">JJ Heller</option>
+                            <option value="Joe Brooks">Joe Brooks</option>
+                            <option value="Joep Mencke">Joep Mencke</option>
+                            <option value="Joey Cape">Joey Cape</option>
+                            <option value="John Adams">John Adams</option>
+                            <option value="John Elliott">John Elliott</option>
+                            <option value="John Frusciante">John Frusciante</option>
+                            <option value="John Frusciante;Josh Klinghoffer">John Frusciante;Josh Klinghoffer</option>
+                            <option value="John Legend">John Legend</option>
+                            <option value="Johnnyswim">Johnnyswim</option>
+                            <option value="Jon Bryant">Jon Bryant</option>
+                            <option value="Jon McLaughlin">Jon McLaughlin</option>
+                            <option value="Jonah Baker">Jonah Baker</option>
+                            <option value="Jonah Baker;Celine">Jonah Baker;Celine</option>
+                            <option value="Jonah Baker;Sara Phillips">Jonah Baker;Sara Phillips</option>
+                            <option value="Jordan Adetunji">Jordan Adetunji</option>
+                            <option value="Jor'dan Armstrong">Jor'dan Armstrong</option>
+                            <option value="Jorge Drexler">Jorge Drexler</option>
+                            <option value="Jorge Drexler;Gal Costa">Jorge Drexler;Gal Costa</option>
+                            <option value="Jorge Drexler;Sebasti??n Prada">Jorge Drexler;Sebasti??n Prada</option>
+                            <option value="Joseph Sullinger">Joseph Sullinger</option>
+                            <option value="Joshua Hyslop">Joshua Hyslop</option>
+                            <option value="Joshua Radin">Joshua Radin</option>
+                            <option value="Joy Williams">Joy Williams</option>
+                            <option value="J-Que Beenz">J-Que Beenz</option>
+                            <option value="Juanaf??">Juanaf??</option>
+                            <option value="Juanaf??;Carmen Lienqueo">Juanaf??;Carmen Lienqueo</option>
+                            <option value="Juanaf??;Demian Rodr??guez">Juanaf??;Demian Rodr??guez</option>
+                            <option value="Juanaf??;La Flor del Recuerdo">Juanaf??;La Flor del Recuerdo</option>
+                            <option value="Juice WRLD">Juice WRLD</option>
+                            <option value="Jules Larson">Jules Larson</option>
+                            <option value="Jul">Jul</option>
+                            <option value="21 Savage">21 Savage</option>
+                            <option value="9DEEP">9DEEP</option>
+                            <option value="Jung Kook">Jung Kook</option>
+                            <option value="Justin Bieber">Justin Bieber</option>
+                            <option value="Justin Moore">Justin Moore</option>
+                            <option value="Justin Timberlake">Justin Timberlake</option>
+                            <option value="Kachkanar">Kachkanar</option>
+                            <option value="KADMON (Live)">KADMON (Live)</option>
+                            <option value="Kaiak">Kaiak</option>
+                            <option value="Kaiak;Viktoria Tolstoy">Kaiak;Viktoria Tolstoy</option>
+                            <option value="Kaifi Khalil">Kaifi Khalil</option>
+                            <option value="Kailash Kher">Kailash Kher</option>
+                            <option value="Kanika Kapoor">Kanika Kapoor</option>
+                            <option value="Kapo">Kapo</option>
+                            <option value="Karim Mahmoud Abdelaziz">Karim Mahmoud Abdelaziz</option>
+                            <option value="KAROL G">KAROL G</option>
+                            <option value="Kazuyoshi Saito">Kazuyoshi Saito</option>
+                            <option value="Keb' Mo';Gerald Albright">Keb' Mo';Gerald Albright</option>
+                            <option value="Keisha White">Keisha White</option>
+                            <option value="Kendrick Lamar">Kendrick Lamar</option>
+                            <option value="Kenya Grace">Kenya Grace</option>
+                            <option value="Khaled">Khaled</option>
+                            <option value="Kiko Dinucci e Bando Afro Macarr??nico">Kiko Dinucci e Bando Afro Macarr??nico</option>
+                            <option value="Kina Grannis">Kina Grannis</option>
+                            <option value="Kina Grannis;Imaginary Future">Kina Grannis;Imaginary Future</option>
+                            <option value="Kitri">Kitri</option>
+                            <option value="KK">KK</option>
+                            <option value="Koe Wetzel">Koe Wetzel</option>
+                            <option value="Kris Allen">Kris Allen</option>
+                            <option value="krissy & ericka">krissy & ericka</option>
+                            <option value="KSHMR">KSHMR</option>
+                            <option value="KT Tunstall">KT Tunstall</option>
+                            <option value="Kurei">Kurei</option>
+                            <option value="Kurt Cobain">Kurt Cobain</option>
+                            <option value="Kutiman;Doctor Flake">Kutiman;Doctor Flake</option>
+                            <option value="Kygo">Kygo</option>
+                            <option value="L??c">L??c</option>
+                            <option value="La Cumbia Chicharra;Emilie Rambaud">La Cumbia Chicharra;Emilie Rambaud</option>
+                            <option value="La Misa Negra">La Misa Negra</option>
+                            <option value="Lack Of Afro;Roxie Ray">Lack Of Afro;Roxie Ray</option>
+                            <option value="Lack Of Afro;Wax;Herbal T">Lack Of Afro;Wax;Herbal T</option>
+                            <option value="Ladaniva">Ladaniva</option>
+                            <option value="Lady Gaga">Lady Gaga</option>
+                            <option value="Lafayette Afro Rock Band">Lafayette Afro Rock Band</option>
+                            <option value="Lamis Kan">Lamis Kan</option>
+                            <option value="Landon Pigg">Landon Pigg</option>
+                            <option value="Lartiste">Lartiste</option>
+                            <option value="Laura Jane Grace">Laura Jane Grace</option>
+                            <option value="Lazaro">Lazaro</option>
+                            <option value="Lee DeWyze">Lee DeWyze</option>
+                            <option value="Lehmber Hussainpuri">Lehmber Hussainpuri</option>
+                            <option value="leoleo">leoleo</option>
+                            <option value="Les Mamans du Congo;RROBIN;Jo??o Selva">Les Mamans du Congo;RROBIN;Jo??o Selva</option>
+                            <option value="Letta Mbulu">Letta Mbulu</option>
+                            <option value="Lewis Capaldi">Lewis Capaldi</option>
+                            <option value="Lijadu Sisters">Lijadu Sisters</option>
+                            <option value="Lil Nas X">Lil Nas X</option>
+                            <option value="Lil Uzi Vert">Lil Uzi Vert</option>
+                            <option value="Limoblaze;Ada Betsabe;Principal">Limoblaze;Ada Betsabe;Principal</option>
+                            <option value="Limoblaze;Ada Ehi">Limoblaze;Ada Ehi</option>
+                            <option value="Limoblaze;Dj Horphuray">Limoblaze;Dj Horphuray</option>
+                            <option value="Limoblaze;Emandiong">Limoblaze;Emandiong</option>
+                            <option value="Limoblaze;Lecrae;Happi">Limoblaze;Lecrae;Happi</option>
+                            <option value="Limoblaze;Marizu">Limoblaze;Marizu</option>
+                            <option value="Limoblaze;Moses Bliss">Limoblaze;Moses Bliss</option>
+                            <option value="Linkin Park">Linkin Park</option>
+                            <option value="Linn Brikell">Linn Brikell</option>
+                            <option value="Little Walter">Little Walter</option>
+                            <option value="Lomiiel">Lomiiel</option>
+                            <option value="Lord Huron">Lord Huron</option>
+                            <option value="Los Amigos Invisibles">Los Amigos Invisibles</option>
+                            <option value="Los Amigos Invisibles;C-Funk;Mcklopedia">Los Amigos Invisibles;C-Funk;Mcklopedia</option>
+                            <option value="Los Amigos Invisibles;Ferraz">Los Amigos Invisibles;Ferraz</option>
+                            <option value="Los Amigos Invisibles;Kinky">Los Amigos Invisibles;Kinky</option>
+                            <option value="Los Amigos Invisibles;Los Aut??nticos Decadentes">Los Amigos Invisibles;Los Aut??nticos Decadentes</option>
+                            <option value="Los Amigos Invisibles;Oscar D'Le??n">Los Amigos Invisibles;Oscar D'Le??n</option>
+                            <option value="Los Amigos Invisibles;Superthriller">Los Amigos Invisibles;Superthriller</option>
+                            <option value="Los Pira?¤as">Los Pira?¤as</option>
+                            <option value="Luca D'Souza">Luca D'Souza</option>
+                            <option value="Luke Bryan">Luke Bryan</option>
+                            <option value="Luke Combs">Luke Combs</option>
+                            <option value="Lupae Filius">Lupae Filius</option>
+                            <option value="Lusaint">Lusaint</option>
+                            <option value="Luther Allison">Luther Allison</option>
+                            <option value="Macklemore">Macklemore</option>
+                            <option value="Madi Diaz">Madi Diaz</option>
+                            <option value="Madison Beer">Madison Beer</option>
+                            <option value="Madraas">Madraas</option>
+                            <option value="Maher Jah">Maher Jah</option>
+                            <option value="Maher Mekhael">Maher Mekhael</option>
+                            <option value="Mahmoud El Leithy">Mahmoud El Leithy</option>
+                            <option value="Major Lazer">Major Lazer</option>
+                            <option value="Maluma">Maluma</option>
+                            <option value="Mance Lipscomb">Mance Lipscomb</option>
+                            <option value="Mandrill">Mandrill</option>
+                            <option value="Mandrill;Michael Masser">Mandrill;Michael Masser</option>
+                            <option value="Manu Dibango">Manu Dibango</option>
+                            <option value="Marc Broussard">Marc Broussard</option>
+                            <option value="Marc Broussard;J.J. Grey">Marc Broussard;J.J. Grey</option>
+                            <option value="Maris Racal">Maris Racal</option>
+                            <option value="Mark Ambor">Mark Ambor</option>
+                            <option value="Mark Oblea">Mark Oblea</option>
+                            <option value="Marshmello">Marshmello</option>
+                            <option value="Masaharu Fukuyama">Masaharu Fukuyama</option>
+                            <option value="Masayoshi Yamazaki">Masayoshi Yamazaki</option>
+                            <option value="Mat Kearney">Mat Kearney</option>
+                            <option value="Matt Costa">Matt Costa</option>
+                            <option value="Matt Johnson">Matt Johnson</option>
+                            <option value="Matt Johnson;Jaclyn Davies">Matt Johnson;Jaclyn Davies</option>
+                            <option value="Matt Nathanson">Matt Nathanson</option>
+                            <option value="Matt Pless">Matt Pless</option>
+                            <option value="Matt White">Matt White</option>
+                            <option value="Matthew Perryman Jones">Matthew Perryman Jones</option>
+                            <option value="Max Wexem">Max Wexem</option>
+                            <option value="Mazze">Mazze</option>
+                            <option value="Medina">Medina</option>
+                            <option value="Meet Bros.">Meet Bros.</option>
+                            <option value="Meg Birch">Meg Birch</option>
+                            <option value="Megan Davies">Megan Davies</option>
+                            <option value="Megan Moroney">Megan Moroney</option>
+                            <option value="Megan Thee Stallion">Megan Thee Stallion</option>
+                            <option value="Meiko">Meiko</option>
+                            <option value="Melanie Herrera">Melanie Herrera</option>
+                            <option value="Melvin Taylor;Lucky Peterson;Titus Williams;Ray 'Killer' Allison">Melvin Taylor;Lucky Peterson;Titus Williams;Ray 'Killer' Allison</option>
+                            <option value="Menahan Street Band">Menahan Street Band</option>
+                            <option value="Menahan Street Band;Saundra Williams">Menahan Street Band;Saundra Williams</option>
+                            <option value="Met?? Met??">Met?? Met??</option>
+                            <option value="mgk">mgk</option>
+                            <option value="Mia Rollo">Mia Rollo</option>
+                            <option value="Michael Logen">Michael Logen</option>
+                            <option value="Michael Ritter">Michael Ritter</option>
+                            <option value="Michelle Featherstone">Michelle Featherstone</option>
+                            <option value="Mika Singh">Mika Singh</option>
+                            <option value="Miley Cyrus">Miley Cyrus</option>
+                            <option value="Millind Gaba">Millind Gaba</option>
+                            <option value="Milo H?fliger">Milo H?fliger</option>
+                            <option value="Mindy Gledhill">Mindy Gledhill</option>
+                            <option value="Mindy Smith">Mindy Smith</option>
+                            <option value="Minorah">Minorah</option>
+                            <option value="MIRA">MIRA</option>
+                            <option value="Mischief Brew">Mischief Brew</option>
+                            <option value="Mithoon">Mithoon</option>
+                            <option value="MoBlack">MoBlack</option>
+                            <option value="Moha K">Moha K</option>
+                            <option value="Mohamed Ramadan">Mohamed Ramadan</option>
+                            <option value="Mohammed Irfan">Mohammed Irfan</option>
+                            <option value="Mohanad Zaiter">Mohanad Zaiter</option>
+                            <option value="Mohit Chauhan">Mohit Chauhan</option>
+                            <option value="Mollono.Bass">Mollono.Bass</option>
+                            <option value="Mone Kamishiraishi">Mone Kamishiraishi</option>
+                            <option value="Money Chicha">Money Chicha</option>
+                            <option value="Moneybagg Yo">Moneybagg Yo</option>
+                            <option value="Monoir">Monoir</option>
+                            <option value="Monophonics;Kelly Finnigan">Monophonics;Kelly Finnigan</option>
+                            <option value="Morbo y Mambo">Morbo y Mambo</option>
+                            <option value="Morbo y Mambo;Andres Nusser">Morbo y Mambo;Andres Nusser</option>
+                            <option value="Morgan Wallen">Morgan Wallen</option>
+                            <option value="Mother's Daughter;Beck Pete">Mother's Daughter;Beck Pete</option>
+                            <option value="Motohiro Hata">Motohiro Hata</option>
+                            <option value="Mulatu Astatke">Mulatu Astatke</option>
+                            <option value="Mustafa Al-Abdullah">Mustafa Al-Abdullah</option>
+                            <option value="Myke Towers">Myke Towers</option>
+                            <option value="Myles Smith">Myles Smith</option>
+                            <option value="Mynox">Mynox</option>
+                            <option value="Naarly">Naarly</option>
+                            <option value="Nakash Aziz">Nakash Aziz</option>
+                            <option value="Namito">Namito</option>
+                            <option value="Nancy Ajram">Nancy Ajram</option>
+                            <option value="Naotaro Moriyama">Naotaro Moriyama</option>
+                            <option value="Nassif Zeytoun">Nassif Zeytoun</option>
+                            <option value="Nathan Angelo">Nathan Angelo</option>
+                            <option value="Nathanael">Nathanael</option>
+                            <option value="Naws">Naws</option>
+                            <option value="Neeti Mohan">Neeti Mohan</option>
+                            <option value="Neha Kakkar">Neha Kakkar</option>
+                            <option value="Nero X">Nero X</option>
+                            <option value="Neulore">Neulore</option>
+                            <option value="Newen Afrobeat">Newen Afrobeat</option>
+                            <option value="Nick Lesta">Nick Lesta</option>
+                            <option value="NLE Choppa">NLE Choppa</option>
+                            <option value="Nomad Saleh">Nomad Saleh</option>
+                            <option value="Nomade Orquestra">Nomade Orquestra</option>
+                            <option value="Nomade Orquestra;Russo Passapusso">Nomade Orquestra;Russo Passapusso</option>
+                            <option value="NORMANDY;Lynn Miller">NORMANDY;Lynn Miller</option>
+                            <option value="North Collision">North Collision</option>
+                            <option value="Nosa">Nosa</option>
+                            <option value="Not Half Bad">Not Half Bad</option>
+                            <option value="Oasis">Oasis</option>
+                            <option value="Oba Reengy;Yoski">Oba Reengy;Yoski</option>
+                            <option value="Ocote Soul Sounds">Ocote Soul Sounds</option>
+                            <option value="Odetari">Odetari</option>
+                            <option value="Ofenbach">Ofenbach</option>
+                            <option value="Olivia Rodrigo">Olivia Rodrigo</option>
+                            <option value="Ondatrópica">Ondatrópica</option>
+                            <option value="OneRepublic">OneRepublic</option>
+                            <option value="OQuadro;Dimak">OQuadro;Dimak</option>
+                            <option value="OQuadro;Jorge Du Peixe">OQuadro;Jorge Du Peixe</option>
+                            <option value="Orchestra Baobab">Orchestra Baobab</option>
+                            <option value="Orgone">Orgone</option>
+                            <option value="Orquestra Brasileira de Música Jamaicana">Orquestra Brasileira de Música Jamaicana</option>
+                            <option value="Orquestra Voadora">Orquestra Voadora</option>
+                            <option value="Osibisa">Osibisa</option>
+                            <option value="Ozuna">Ozuna</option>
+                            <option value="Palak Muchhal">Palak Muchhal</option>
+                            <option value="Pandhora">Pandhora</option>
+                            <option value="PANDIT">PANDIT</option>
+                            <option value="Parach">Parach</option>
+                            <option value="Parachute">Parachute</option>
+                            <option value="Param Singh">Param Singh</option>
+                            <option value="Parker Jenkins">Parker Jenkins</option>
+                            <option value="Passenger">Passenger</option>
+                            <option value="Paul Damixie">Paul Damixie</option>
+                            <option value="Paul Russell">Paul Russell</option>
+                            <option value="Pav Dharia">Pav Dharia</option>
+                            <option value="Payal Dev">Payal Dev</option>
+                            <option value="Penny and Sparrow">Penny and Sparrow</option>
+                            <option value="Penny and Sparrow;Stephanie Briggs">Penny and Sparrow;Stephanie Briggs</option>
+                            <option value="Peso Pluma">Peso Pluma</option>
+                            <option value="Peter Bradley Adams">Peter Bradley Adams</option>
+                            <option value="Pharrell Williams">Pharrell Williams</option>
+                            <option value="Phelles">Phelles</option>
+                            <option value="Phillip LaRue">Phillip LaRue</option>
+                            <option value="Pigeon Pit">Pigeon Pit</option>
+                            <option value="Plamina">Plamina</option>
+                            <option value="Plan B">Plan B</option>
+                            <option value="Plastilina Mosh">Plastilina Mosh</option>
+                            <option value="Playboi Carti">Playboi Carti</option>
+                            <option value="Polygraph">Polygraph</option>
+                            <option value="Pompi">Pompi</option>
+                            <option value="Porth Nole">Porth Nole</option>
+                            <option value="Post Malone">Post Malone</option>
+                            <option value="Postcards & Polaroids;Sad Boy">Postcards & Polaroids;Sad Boy</option>
+                            <option value="Prash">Prash</option>
+                            <option value="Prateek Kuhad">Prateek Kuhad</option>
+                            <option value="Prinx Emmanuel;Grace Lokwa">Prinx Emmanuel;Grace Lokwa</option>
+                            <option value="Priscilla Ahn">Priscilla Ahn</option>
+                            <option value="Pritam">Pritam</option>
+                            <option value="Queen">Queen</option>
+                            <option value="QUITAPENAS">QUITAPENAS</option>
+                            <option value="R3HAB">R3HAB</option>
+                            <option value="Rachael Yamagata">Rachael Yamagata</option>
+                            <option value="Ragheb Alama">Ragheb Alama</option>
+                            <option value="Rail Yard Ghosts">Rail Yard Ghosts</option>
+                            <option value="rAin (MU)">rAin (MU)</option>
+                            <option value="Ram Sampath">Ram Sampath</option>
+                            <option value="Ramshackle Glory">Ramshackle Glory</option>
+                            <option value="Ramy Sabry">Ramy Sabry</option>
+                            <option value="Ras Algethi">Ras Algethi</option>
+                            <option value="Rashed Al-Majed">Rashed Al-Majed</option>
+                            <option value="Rasi Z">Rasi Z</option>
+                            <option value="Rauw Alejandro">Rauw Alejandro</option>
+                            <option value="Ray LaMontagne">Ray LaMontagne</option>
+                            <option value="Ray LaMontagne;Sierra Ferrell">Ray LaMontagne;Sierra Ferrell</option>
+                            <option value="Real Boston Richey">Real Boston Richey</option>
+                            <option value="Rebecca">Rebecca</option>
+                            <option value="Reda El Bahrawy">Reda El Bahrawy</option>
+                            <option value="Rehmahz;Asha Elia">Rehmahz;Asha Elia</option>
+                            <option value="Rekha Bhardwaj">Rekha Bhardwaj</option>
+                            <option value="RENT STRIKE">RENT STRIKE</option>
+                            <option value="REV Shergill">REV Shergill</option>
+                            <option value="Rex Williams">Rex Williams</option>
+                            <option value="Ric Niels">Ric Niels</option>
+                            <option value="Richard Walters">Richard Walters</option>
+                            <option value="Ricky Rich">Ricky Rich</option>
+                            <option value="Rishi Rich">Rishi Rich</option>
+                            <option value="Ritvik Virmani">Ritvik Virmani</option>
+                            <option value="Roberto Diana;Muniesa">Roberto Diana;Muniesa</option>
+                            <option value="Rochak Kohli">Rochak Kohli</option>
+                            <option value="Rod Wave">Rod Wave</option>
+                            <option value="Rodrigo y Gabriela">Rodrigo y Gabriela</option>
+                            <option value="Romperayo">Romperayo</option>
+                            <option value="Ron Pope">Ron Pope</option>
+                            <option value="Roro Harb">Roro Harb</option>
+                            <option value="Rory Block">Rory Block</option>
+                            <option value="Roses & Frey">Roses & Frey</option>
+                            <option value="Rosi Golan">Rosi Golan</option>
+                            <option value="Rosie Thomas;The Shins;Sufjan Stevens;Josh Ottum">Rosie Thomas;The Shins;Sufjan Stevens;Josh Ottum</option>
+                            <option value="Ross Copperman">Ross Copperman</option>
+                            <option value="São Paulo Ska Jazz;Ken Stewart">São Paulo Ska Jazz;Ken Stewart</option>
+                            <option value="Saad Lamjarred">Saad Lamjarred</option>
+                            <option value="Sabrina Carpenter">Sabrina Carpenter</option>
+                            <option value="Sachet Tandon">Sachet Tandon</option>
+                            <option value="Sachin-Jigar">Sachin-Jigar</option>
+                            <option value="SafetySuit">SafetySuit</option>
+                            <option value="Saif Nabeel">Saif Nabeel</option>
+                            <option value="Sakura Fujiwara">Sakura Fujiwara</option>
+                            <option value="Saleem Salem">Saleem Salem</option>
+                            <option value="Salim Sulaiman">Salim Sulaiman</option>
+                            <option value="Salty Snacks">Salty Snacks</option>
+                            <option value="Sam Smith">Sam Smith</option>
+                            <option value="Samuca e a Selva">Samuca e a Selva</option>
+                            <option value="Samuca e a Selva;Criolo">Samuca e a Selva;Criolo</option>
+                            <option value="Samuca e a Selva;Illy">Samuca e a Selva;Illy</option>
+                            <option value="Samuca e a Selva;Luedji Luna">Samuca e a Selva;Luedji Luna</option>
+                            <option value="Samuca e a Selva;Oné">Samuca e a Selva;Oné</option>
+                            <option value="Sanam">Sanam</option>
+                            <option value="SANNA NORTH">SANNA NORTH</option>
+                            <option value="Sara Bareilles">Sara Bareilles</option>
+                            <option value="Sara Bareilles;John Legend">Sara Bareilles;John Legend</option>
+                            <option value="Sara Farell">Sara Farell</option>
+                            <option value="Sara Farell;Simon Samaeng">Sara Farell;Simon Samaeng</option>
+                            <option value="Sarah Tõibo">Sarah Tõibo</option>
+                            <option value="Sarah Tõibo;Fred Hammond">Sarah Tõibo;Fred Hammond</option>
+                            <option value="Sarah Tõibo;Sigag Lauren;Paola Carla">Sarah Tõibo;Sigag Lauren;Paola Carla</option>
+                            <option value="Sarah Tõibo;Tneek">Sarah Tõibo;Tneek</option>
+                            <option value="Sasha Miro">Sasha Miro</option>
+                            <option value="Savi Kahlon">Savi Kahlon</option>
+                            <option value="Selena Gomez">Selena Gomez</option>
+                            <option value="Sevdaliza">Sevdaliza</option>
+                            <option value="Shaarib Toshi">Shaarib Toshi</option>
+                            <option value="Shaboozey">Shaboozey</option>
+                            <option value="Shannon & Keast">Shannon & Keast</option>
+                            <option value="Shaurya Mehta">Shaurya Mehta</option>
+                            <option value="Shawn Mendes">Shawn Mendes</option>
+                            <option value="She/Her/hers">She/Her/hers</option>
+                            <option value="Sherine">Sherine</option>
+                            <option value="Shikao Suga">Shikao Suga</option>
+                            <option value="Shunus">Shunus</option>
+                            <option value="Sidhu Moose Wala">Sidhu Moose Wala</option>
+                            <option value="SKLV">SKLV</option>
+                            <option value="Sohail Sen">Sohail Sen</option>
+                            <option value="Son Palenque;Cerrero;El León Pardo">Son Palenque;Cerrero;El León Pardo</option>
+                            <option value="Son&Dad;Filip Nordin">Son&Dad;Filip Nordin</option>
+                            <option value="Sonny Boy Williamson II">Sonny Boy Williamson II</option>
+                            <option value="Sonu Nigam">Sonu Nigam</option>
+                            <option value="Souvnear">Souvnear</option>
+                            <option value="Speedometer">Speedometer</option>
+                            <option value="Spieltape">Spieltape</option>
+                            <option value="Star Feminine Band">Star Feminine Band</option>
+                            <option value="Stefania">Stefania</option>
+                            <option value="Stephen Speaks">Stephen Speaks</option>
+                            <option value="Steve Pulvers">Steve Pulvers</option>
+                            <option value="ST-Saint;Mark Asari;Reblah;678NATH;Raptist & Marko;Leslie Skye;Zelijah & Konola;Gtay;Nizzy Nath;JL Poleon">ST-Saint;Mark Asari;Reblah;678NATH;Raptist & Marko;Leslie Skye;Zelijah & Konola;Gtay;Nizzy Nath;JL Poleon</option>
+                            <option value="Subhira">Subhira</option>
+                            <option value="Sukh-E Muzical Doctorz">Sukh-E Muzical Doctorz</option>
+                            <option value="Sukhwinder Singh">Sukhwinder Singh</option>
+                            <option value="Sultana">Sultana</option>
+                            <option value="Sunanda Sharma">Sunanda Sharma</option>
+                            <option value="Sungha Jung">Sungha Jung</option>
+                            <option value="Sunidhi Chauhan">Sunidhi Chauhan</option>
+                            <option value="Sunset & Highland">Sunset & Highland</option>
+                            <option value="Susie Suh;Robot Koch">Susie Suh;Robot Koch</option>
+                            <option value="Suy Galvez">Suy Galvez</option>
+                            <option value="SZA">SZA</option>
+                            <option value="Taj Mahal">Taj Mahal</option>
+                            <option value="Takehara Pistol">Takehara Pistol</option>
+                            <option value="Tamer Ashour">Tamer Ashour</option>
+                            <option value="Tamio Okuda">Tamio Okuda</option>
+                            <option value="Tanishk Bagchi">Tanishk Bagchi</option>
+                            <option value="Tate McRae">Tate McRae</option>
+                            <option value="Taylor Swift">Taylor Swift</option>
+                            <option value="Tayna">Tayna</option>
+                            <option value="Teddy Swims">Teddy Swims</option>
+                            <option value="Tee Grizzley">Tee Grizzley</option>
+                            <option value="Tego Calderón">Tego Calderón</option>
+                            <option value="Thales Senses">Thales Senses</option>
+                            <option value="The Bamboos">The Bamboos</option>
+                            <option value="The Bamboos;Washington">The Bamboos;Washington</option>
+                            <option value="The Beatles">The Beatles</option>
+                            <option value="The Bongo Hop;Dafuniks">The Bongo Hop;Dafuniks</option>
+                            <option value="The Bongo Hop;Maikcel">The Bongo Hop;Maikcel</option>
+                            <option value="The Bongo Hop;Nidia Gongora">The Bongo Hop;Nidia Gongora</option>
+                            <option value="The Bridge City Sinners">The Bridge City Sinners</option>
+                            <option value="The Budos Band">The Budos Band</option>
+                            <option value="The Cameron Collective">The Cameron Collective</option>
+                            <option value="The Chainsmokers">The Chainsmokers</option>
+                            <option value="The Civil Wars">The Civil Wars</option>
+                            <option value="The Hourglass Effect">The Hourglass Effect</option>
+                            <option value="The Kid LAROI">The Kid LAROI</option>
+                            <option value="The Killers">The Killers</option>
+                            <option value="The Local Train">The Local Train</option>
+                            <option value="The Maras">The Maras</option>
+                            <option value="The Mayries">The Mayries</option>
+                            <option value="The Mighty Imperials">The Mighty Imperials</option>
+                            <option value="The Moor">The Moor</option>
+                            <option value="The Neighbourhood">The Neighbourhood</option>
+                            <option value="The New Mastersounds;Eddie Roberts">The New Mastersounds;Eddie Roberts</option>
+                            <option value="The New Mastersounds;Eddie Roberts;Lamar Williams Jr.">The New Mastersounds;Eddie Roberts;Lamar Williams Jr.</option>
+                            <option value="The New Mastersounds;Spellbinder">The New Mastersounds;Spellbinder</option>
+                            <option value="The Perishers">The Perishers</option>
+                            <option value="The Poets Of Rhythm">The Poets Of Rhythm</option>
+                            <option value="The Police">The Police</option>
+                            <option value="The Rescues">The Rescues</option>
+                            <option value="The Rish">The Rish</option>
+                            <option value="The Souljazz Orchestra">The Souljazz Orchestra</option>
+                            <option value="The Weeknd">The Weeknd</option>
+                            <option value="The Weepies;Deb Talan;Steve Tannen">The Weepies;Deb Talan;Steve Tannen</option>
+                            <option value="Thee Commons">Thee Commons</option>
+                            <option value="Thiago França">Thiago França</option>
+                            <option value="Thomas Daniel">Thomas Daniel</option>
+                            <option value="Thomas Rhett">Thomas Rhett</option>
+                            <option value="Tim Halperin">Tim Halperin</option>
+                            <option value="Tim Vantol">Tim Vantol</option>
+                            <option value="Timoneki">Timoneki</option>
+                            <option value="Timoneki;Silvana Estrada">Timoneki;Silvana Estrada</option>
+                            <option value="Tito Double P">Tito Double P</option>
+                            <option value="TJ Cream">TJ Cream</option>
+                            <option value="TJ Cream;Marko">TJ Cream;Marko</option>
+                            <option value="TJ Cream;Ozoro">TJ Cream;Ozoro</option>
+                            <option value="Tobey Rosen">Tobey Rosen</option>
+                            <option value="Tobias Bergson">Tobias Bergson</option>
+                            <option value="Todd Carey">Todd Carey</option>
+                            <option value="Todd Carey;Ariza;Chuck Leavell">Todd Carey;Ariza;Chuck Leavell</option>
+                            <option value="TOESUP">TOESUP</option>
+                            <option value="Tom Odell">Tom Odell</option>
+                            <option value="Tommy Richman">Tommy Richman</option>
+                            <option value="Tones And I">Tones And I</option>
+                            <option value="Tony Allen">Tony Allen</option>
+                            <option value="Tony Allen;Damon Albarn">Tony Allen;Damon Albarn</option>
+                            <option value="Tony Dize">Tony Dize</option>
+                            <option value="Tony Kakkar">Tony Kakkar</option>
+                            <option value="Travis Scott">Travis Scott</option>
+                            <option value="Tres Hermanas">Tres Hermanas</option>
+                            <option value="Trevor Hall">Trevor Hall</option>
+                            <option value="Trevor Hall;Marieme">Trevor Hall;Marieme</option>
+                            <option value="Tristan Prettyman">Tristan Prettyman</option>
+                            <option value="Troye Sivan">Troye Sivan</option>
+                            <option value="Tucker Wetmore">Tucker Wetmore</option>
+                            <option value="TUL8TE">TUL8TE</option>
+                            <option value="TUSHAR JOSHI">TUSHAR JOSHI</option>
+                            <option value="Twenty One Pilots">Twenty One Pilots</option>
+                            <option value="Tyla">Tyla</option>
+                            <option value="Tyler Ward">Tyler Ward</option>
+                            <option value="Tyler Ward;Karis;Ray Lorraine">Tyler Ward;Karis;Ray Lorraine</option>
+                            <option value="Tyler Ward;Lindsey Stirling;Kina Grannis">Tyler Ward;Lindsey Stirling;Kina Grannis</option>
+                            <option value="Tyler Ward;Madysyn">Tyler Ward;Madysyn</option>
+                            <option value="Tyrone Wells">Tyrone Wells</option>
+                            <option value="Udit Narayan">Udit Narayan</option>
+                            <option value="Unkle Bob">Unkle Bob</option>
+                            <option value="Us The Duo">Us The Duo</option>
+                            <option value="Vance Joy">Vance Joy</option>
+                            <option value="Vendredi;Chrissy Dave">Vendredi;Chrissy Dave</option>
+                            <option value="Vendredi;ELLE">Vendredi;ELLE</option>
+                            <option value="Vendredi;Son&Dad">Vendredi;Son&Dad</option>
+                            <option value="Victor Rice">Victor Rice</option>
+                            <option value="Violent Femmes">Violent Femmes</option>
+                            <option value="Vishal Mishra">Vishal Mishra</option>
+                            <option value="Vishal-Shekhar">Vishal-Shekhar</option>
+                            <option value="Vivian Roost">Vivian Roost</option>
+                            <option value="Vivid Color">Vivid Color</option>
+                            <option value="Vlade Kay">Vlade Kay</option>
+                            <option value="Vogel">Vogel</option>
+                            <option value="Voilaaa;Hawa;Fouley Badiaga">Voilaaa;Hawa;Fouley Badiaga</option>
+                            <option value="Voilaaa;Pat Kalla">Voilaaa;Pat Kalla</option>
+                            <option value="Voilaaa;Sir Jean">Voilaaa;Sir Jean</option>
+                            <option value="VS Prjct">VS Prjct</option>
+                            <option value="Wael Idrees">Wael Idrees</option>
+                            <option value="Wael Jassar">Wael Jassar</option>
+                            <option value="Wael Kfoury">Wael Kfoury</option>
+                            <option value="Walter Astral">Walter Astral</option>
+                            <option value="Wassu">Wassu</option>
+                            <option value="Wayne Mack">Wayne Mack</option>
+                            <option value="We The Heathens">We The Heathens</option>
+                            <option value="Wegz">Wegz</option>
+                            <option value="Wganda Kenya">Wganda Kenya</option>
+                            <option value="Whoshafee">Whoshafee</option>
+                            <option value="Will Moore">Will Moore</option>
+                            <option value="William Fitzsimmons">William Fitzsimmons</option>
+                            <option value="William Onyeabor">William Onyeabor</option>
+                            <option value="XANDi">XANDi</option>
+                            <option value="XXXTENTACION">XXXTENTACION</option>
+                            <option value="Y?urr">Y?urr</option>
+                            <option value="Yandel">Yandel</option>
+                            <option value="Yerin">Yerin</option>
+                            <option value="Yng Lvcas">Yng Lvcas</option>
+                            <option value="Yo Yo Honey Singh">Yo Yo Honey Singh</option>
+                            <option value="Yosui Inoue">Yosui Inoue</option>
+                            <option value="Yosui Inoue;Tamio Okuda">Yosui Inoue;Tamio Okuda</option>
+                            <option value="Ysabelle Cuevas">Ysabelle Cuevas</option>
+                            <option value="Yu Takahashi">Yu Takahashi</option>
+                            <option value="YUZU">YUZU</option>
+                            <option value="Zach Bryan">Zach Bryan</option>
+                            <option value="Zach Top">Zach Top</option>
+                            <option value="Zack Knight">Zack Knight</option>
+                            <option value="Zack Tabudlo">Zack Tabudlo</option>
+                            <option value="Zack Tabudlo;Billkin">Zack Tabudlo;Billkin</option>
+                            <option value="Zack Tabudlo;James TW">Zack Tabudlo;James TW</option>
+                            <option value="Zack Tabudlo;Yonnyboii">Zack Tabudlo;Yonnyboii</option>
+                            <option value="Zak Manley">Zak Manley</option>
+                            <option value="Zee Avi">Zee Avi</option>
+                            <option value="Zenon Z'Adore">Zenon Z'Adore</option>
+                            <option value="Zigan Aldi">Zigan Aldi</option>
+                            <option value="Zouhair Bahaoui">Zouhair Bahaoui</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="form-group">
+                        <!-- Dropdown for Country Selection -->
+                        <label for="country_name"  class="form-label">Country Name:</label>
+                        <select  class="form-select" id="country_name" name="country_name" required 
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Select Country">
+                            <option value="" disabled selected>Select a Country</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Albania">Albania</option>
+                            <option value="Algeria">Algeria</option>
+                            <option value="Argentina">Argentina</option>
+                            <option value="Armenia">Armenia</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Bahrain">Bahrain</option>
+                            <option value="Belgium">Belgium</option>
+                            <option value="Brazil">Brazil</option>
+                            <option value="Bulgaria">Bulgaria</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Colombia">Colombia</option>
+                            <option value="Denmark">Denmark</option>
+                            <option value="Dominican Republic">Dominican Republic</option>
+                            <option value="Egypt">Egypt</option>
+                            <option value="France">France</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Germany">Germany</option>
+                            <option value="Greece">Greece</option>
+                            <option value="Haiti">Haiti</option>
+                            <option value="India">India</option>
+                            <option value="Iraq">Iraq</option>
+                            <option value="Ireland">Ireland</option>
+                            <option value="Israel">Israel</option>
+                            <option value="Italy">Italy</option>
+                            <option value="Japan">Japan</option>
+                            <option value="Latin America">Latin America</option>
+                            <option value="Lebanon">Lebanon</option>
+                            <option value="Luxembourg">Luxembourg</option>
+                            <option value="Malaysia">Malaysia</option>
+                            <option value="Mexico">Mexico</option>
+                            <option value="Morocco">Morocco</option>
+                            <option value="Netherlands">Netherlands</option>
+                            <option value="Northern Ireland">Northern Ireland</option>
+                            <option value="Norway">Norway</option>
+                            <option value="Pakistan">Pakistan</option>
+                            <option value="Palestine">Palestine</option>
+                            <option value="Philippines">Philippines</option>
+                            <option value="Puerto Rico">Puerto Rico</option>
+                            <option value="Romania">Romania</option>
+                            <option value="Russia">Russia</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="Serbia">Serbia</option>
+                            <option value="South Africa">South Africa</option>
+                            <option value="South Korea">South Korea</option>
+                            <option value="Spain">Spain</option>
+                            <option value="Sweden">Sweden</option>
+                            <option value="Switzerland">Switzerland</option>
+                            <option value="Syria">Syria</option>
+                            <option value="Tunisia">Tunisia</option>
+                            <option value="Turkey">Turkey</option>
+                            <option value="United Arab Emirates">United Arab Emirates</option>
+                            <option value="United States">United States</option>
+                            <option value="United States / Philippines">United States / Philippines</option>
+                            <option value="United States of America">United States of America</option>
+                            <option value="Unknown">Unknown</option>
+                            <option value="Unknown / Possibly United States">Unknown / Possibly United States</option>
+                            <option value="Venezuela">Venezuela</option>
+                            <option value="Vietnam">Vietnam</option>
+                            <option value="West Africa">West Africa</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4">
+                    <div class="form-group">
+                        <!-- Dropdown for Genre Selection -->
+                        <label for="artist_genres"  class="form-label">Artist Genre:</label>
+                        <select class="form-select" id="artist_genres" name="artist_genres" required 
+                            data-bs-toggle="tooltip" data-bs-placement="top" title="Select Song Genre">
+                            <option value="" disabled selected>Select a Genre</option>
+                            <option value="acoustic">Acoustic</option>
+                            <option value="afghan_pop">Afghan Pop</option>
+                            <option value="afro">Afro</option>
+                            <option value="afrobeat">Afrobeat</option>
+                            <option value="albanian_pop">Albanian Pop</option>
+                            <option value="arab_pop">Arab Pop</option>
+                            <option value="armenian_hip_hop">Armenian Hip Hop</option>
+                            <option value="belgian_hip_hop">Belgian Hip Hop</option>
+                            <option value="bollywood">Bollywood</option>
+                            <option value="classic">Classic</option>
+                            <option value="classic_pop">Classic Pop</option>
+                            <option value="egyptian">Egyptian</option>
+                            <option value="electronic">Electronic</option>
+                            <option value="folk">Folk</option>
+                            <option value="french_hip_hop">French Hip Hop</option>
+                            <option value="hip_hop">Hip Hop</option>
+                            <option value="khaliji">Khaliji</option>
+                            <option value="k_pop">K-Pop</option>
+                            <option value="melody">Melody</option>
+                            <option value="pakistani">Pakistani</option>
+                            <option value="palestinian_pop">Palestinian Pop</option>
+                            <option value="pop">Pop</option>
+                            <option value="punjabi">Punjabi</option>
+                            <option value="rap">Rap</option>
+                            <option value="rock">Rock</option>
+                            <option value="syrian_hip_hop">Syrian Hip Hop</option>
+                            <option value="tamil">Tamil</option>
+                            <!-- Add other genres as necessary -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Audio Features -->
+            <h5 class="text-center my-4" style="color: #333; font-size: 20px;">Audio Features</h5>
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <div class="form-group">
+					<label for="duration_minutes" class="form-label">Duration (0.63 - 10.92 minutes)</label>
+					<div class="d-flex gap-2">
+						<input type="number" class="form-control" id="duration_minutes" name="duration_minutes" required 
+							min="0" max="10" placeholder="Minutes" 
+							data-bs-toggle="tooltip" data-bs-placement="top" title="Enter song duration in minutes">
+    
+						<input type="number" class="form-control" id="duration_seconds" name="duration_seconds" required 
+							min="0" max="59" placeholder="Seconds"
+							data-bs-toggle="tooltip" data-bs-placement="top" title="Enter song duration in seconds">
+						</div>
+						<div class="invalid-feedback">
+							Please enter a valid duration between 0.63 and 10.92 minutes (i.e., 37,702 – 655,440 ms).
+					</div>
+					</div>	          
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="form-group">
+                        <label for="speechiness" class="form-label">Speechiness (0-1)</label>
+                        <input type="number" class="form-control" id="speechiness" name="speechiness" step="any" required 
+                        min="0" max="1" data-bs-toggle="tooltip" data-bs-placement="top" title="Speechiness of the song">
+                        <div class="invalid-feedback">Please enter speechiness value between 0 and 1.</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="form-group">
+                        <label for="energy" class="form-label">Energy (0-1)</label>
+                        <input type="number" class="form-control" id="energy" name="energy" step="any" required 
+                        min="0" max="1" data-bs-toggle="tooltip" data-bs-placement="top" title="Energy level of the song">
+                        <div class="invalid-feedback">Please enter energy level between 0 and 1.</div>
+                    </div>
+                </div>
+            </div>
+          
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <div class="form-group" class="form-label">
+                        <label for="valence">Valence (0-1):</label>
+                        <input type="number" class="form-control" id="valence" name="valence" step="any" required 
+                        min="0" max="1" data-bs-toggle="tooltip" data-bs-placement="top" title="Valence of the song">
+                        <div class="invalid-feedback">Please enter valence value between 0 and 1.</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="form-group" class="form-label">
+                        <label for="danceability">Danceability (0-1):</label>
+                        <input type="number" class="form-control" id="danceability" name="danceability" step="any" required 
+                        min="0" max="1" data-bs-toggle="tooltip" data-bs-placement="top" title="Danceability of the song">
+                        <div class="invalid-feedback">Please enter danceability between 0 and 1.</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="form-group" class="form-label">
+                        <label for="acousticness">Acousticness (0-1):</label>
+                        <input type="number" class="form-control" id="acousticness" name="acousticness" step="any" required  
+                        min="0" max="1" data-bs-toggle="tooltip" data-bs-placement="top" title="Acousticness of the song">
+                        <div class="invalid-feedback">Please enter acousticness value between 0 and 1.</div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="row g-3">
+                <div class="col-12 col-md-4">
+                    <div class="form-group">
+                        <label for="tempo" class="form-label">Tempo (53.845 - 220.081):</label>
+                        <input type="number" class="form-control" id="tempo" name="tempo" step="any" required 
+                        min="-53.845" max="220.081" data-bs-toggle="tooltip" data-bs-placement="top" title="Tempo of the song in beats per minute">
+                        <div class="invalid-feedback">Please enter tempo between 53.85 and 220.08 bpm.</div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4">
+                    <div class="form-group">
+                        <label for="liveness" class="form-label">Liveness (0-1):</label>
+                        <input type="number" class="form-control" id="liveness" name="liveness" step="any" required 
+                        min="0" max="1" data-bs-toggle="tooltip" data-bs-placement="top" title="Liveness of the song">
+                        <div class="invalid-feedback">Please enter liveness between 0 and 1.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn-lg" id="submit-btn" style="background-color: #e74c3c; border-color: #e74c3c;">Predict Popularity</button>
+                <div class="spinner-border text-primary spinner" role="status" id="loading-spinner">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+        </form>
+
+        {% if prediction %}
+        <div class="prediction text-center mt-4">
+            <h4 class="display-5">Predicted Popularity: <span class="text-success">{{ prediction }}</span></h4>
+        </div>
+        {% endif %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+    <script>
+       /* $(document).ready(function () {
+            // Initialize tooltips
+            $('[data-bs-toggle="tooltip"]').tooltip();
+    
+            // Form validation
+            $('#prediction-form').on('submit', function (e) {
+                e.preventDefault();  // Prevent form submission for AJAX
+                if (this.checkValidity() === false) {
+                    e.stopPropagation();
+                } else {
+                    // Show loading spinner
+                    $('#loading-spinner').addClass('show');
+                    // Simulate a delay for prediction (Replace with real prediction logic)
+                    setTimeout(function () {
+                        $('#loading-spinner').removeClass('show');
+                        alert("Prediction made!");
+                    }, 2000);  // 2 seconds delay
+                }
+                this.classList.add('was-validated');
+            });
+        }); */
+    </script>
+</body>
+</html>
