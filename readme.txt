@@ -9,7 +9,7 @@ If you are running the project from the beginning,
 7 - after installing run the model(NOTE: model must be run using your model file name, I added my model as train_model.py) using this command -  python train_model.py
 8 - finally run the project using this command - python app.py
 
-if you have the same python versions, 
+if you have the same python versions (3.10), 
 
 1 - go the the song-popularity-prediction folder
 2 - run this command - venv\Scripts\activate
